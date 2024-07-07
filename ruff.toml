@@ -1,0 +1,13 @@
+include = ["qualifier"]
+
+select = ["ALL"]
+
+ignore = [
+    "D100",     # undocumented-public-module
+    "INP001",   # implicit-namespace-package
+    "T201",     # print
+]
+
+line-length = 120
+
+target-version = "py312"
