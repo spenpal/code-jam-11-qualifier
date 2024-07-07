@@ -6,7 +6,6 @@ import qualifier
 
 
 class TestQuoteCreation(unittest.TestCase):
-
     def setUp(self):
         qualifier.Database.quotes = []
 
@@ -14,16 +13,18 @@ class TestQuoteCreation(unittest.TestCase):
         test_cases = [
             "Help! Help! I'm being repressed",
             "That rabbit's dynamite",
-            "A scratch?"
+            "A scratch?",
         ]
 
         for test in test_cases:
             with self.subTest(test=test):
-                qualifier.run_command(f"quote \"{test}\"")
+                qualifier.run_command(f'quote "{test}"')
                 self.assertEqual(str(qualifier.Database.quotes[-1]), test)
 
     def test_normal_too_long(self):
-        test_case = "aaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        test_case = (
+            "aaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        )
 
         with self.assertRaises(ValueError) as exc:
             qualifier.run_command(f'quote "{test_case}"')
@@ -31,7 +32,7 @@ class TestQuoteCreation(unittest.TestCase):
 
     def test_smart_quotes(self):
         test_case = "Knights who say Ni"
-        qualifier.run_command(f'quote “{test_case}”')
+        qualifier.run_command(f"quote “{test_case}”")
         self.assertEqual(str(qualifier.Database.quotes[-1]), test_case)
 
     def test_uwu_quote(self):
@@ -87,10 +88,10 @@ class TestQuoteCreation(unittest.TestCase):
     def test_invalid_command(self):
         test_case = "This sure looks like a quote"
         invalid_commands = [
-            f'uwu {test_case}',
-            f'piglatin {test_case}',
+            f"uwu {test_case}",
+            f"piglatin {test_case}",
             test_case,
-            f'quotes {test_case}'
+            f"quotes {test_case}",
         ]
 
         for command in invalid_commands:
@@ -116,7 +117,7 @@ class TestQuoteCreation(unittest.TestCase):
         sys.stdout = sys.__stdout__
 
     def test_database_error_quote(self):
-        test_case = 'Nobody expects the Spanish Inquisition!'
+        test_case = "Nobody expects the Spanish Inquisition!"
 
         expected_output = "Quote has already been added previously\n"
 
@@ -132,11 +133,7 @@ class TestQuoteCreation(unittest.TestCase):
         sys.stdout = sys.__stdout__
 
     def test_display_quotes(self):
-        quotes = [
-            "Quote 1",
-            "Quote 2 looks so sweet",
-            "Quote 4 or wait... is it 3?"
-        ]
+        quotes = ["Quote 1", "Quote 2 looks so sweet", "Quote 4 or wait... is it 3?"]
 
         qualifier.Database.quotes = quotes
 
@@ -153,13 +150,13 @@ class TestQuoteCreation(unittest.TestCase):
         sys.stdout = sys.__stdout__
 
     def test_quote_instance(self):
-        test_case = 'Nobody expects the Spanish Inquisition!'
+        test_case = "Nobody expects the Spanish Inquisition!"
         qualifier.run_command(f'quote "{test_case}"')
 
         self.assertIsInstance(qualifier.Database.quotes[-1], qualifier.Quote)
 
     def test_variant_attribute(self):
-        test_case = 'Tis but a scratch'
+        test_case = "Tis but a scratch"
         qualifier.run_command(f'quote uwu "{test_case}"')
 
         added_quote = qualifier.Database.quotes[-1]
@@ -171,10 +168,10 @@ class TestQuoteCreation(unittest.TestCase):
         test_cases = (
             (qualifier.VariantMode.NORMAL, "Code golfers beware"),
             (qualifier.VariantMode.UWU, "Code gowfews bewawe"),
-            (qualifier.VariantMode.PIGLATIN, "Odecay olfersgay ewarebay")
+            (qualifier.VariantMode.PIGLATIN, "Odecay olfersgay ewarebay"),
         )
 
-        self.assertTrue(hasattr(qualifier.Quote, '_create_variant'))
+        self.assertTrue(hasattr(qualifier.Quote, "_create_variant"))
 
         for mode, variant_result in test_cases:
             quote = qualifier.Quote(quote_str, qualifier.VariantMode.NORMAL)
