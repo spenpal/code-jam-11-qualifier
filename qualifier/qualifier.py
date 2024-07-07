@@ -28,9 +28,13 @@ class Quote:
 
     def __init__(self, quote: str, mode: VariantMode) -> None:
         """Initialize the quote with the given `quote` and `mode`."""
+        self.error_msgs = [
+            "Quote is too long",
+            "Quote too long, only partially transformed",
+            "Quote was not modified",
+        ]
         if len(quote) > MAX_QUOTE_LENGTH:
-            msg = "Quote is too long"
-            raise ValueError(msg)
+            raise ValueError(self.error_msgs[0])
         self.quote = quote
         self.mode = mode
         self.transformed_quote = self._create_variant()
@@ -49,33 +53,30 @@ class Quote:
             case _:
                 return self.quote
 
-    def uwuify(self, text: str) -> str:
-        """Transform the text to uwu variant."""
-        old_text = text
-
+    def uwuify(self, quote: str) -> str:
+        """Transform the quote to uwu variant."""
         # Replace all L or R with W
-        text = re.sub(r"[LR]", "W", text)
-        text = re.sub(r"[lr]", "w", text)
+        quote = re.sub(r"[LR]", "W", quote)
+        quote = re.sub(r"[lr]", "w", quote)
 
         # Stuttering
-        text = re.sub(r"\b([uU])", r"\1-\1", text)
+        quote = re.sub(r"\b([uU])", r"\1-\1", quote)
 
-        if text == old_text:
-            msg = "Quote was not modified"
-            raise ValueError(msg)
+        if quote == self.quote:
+            raise ValueError(self.error_msgs[2])
 
         # Check for length
-        if len(text) > MAX_QUOTE_LENGTH:
-            text = old_text
-            text = re.sub(r"[LR]", "W", text)
-            text = re.sub(r"[lr]", "w", text)
-            warnings.warn("Quote too long, only partially transformed", stacklevel=2)
+        if len(quote) > MAX_QUOTE_LENGTH:
+            quote = self.quote
+            quote = re.sub(r"[LR]", "W", quote)
+            quote = re.sub(r"[lr]", "w", quote)
+            warnings.warn(self.error_msgs[1], stacklevel=2)
 
-        return text
+        return quote
 
-    def piglatinify(self, text: str) -> str:
-        """Transform the text to piglatin variant."""
-        words = text.split()
+    def piglatinify(self, quote: str) -> str:
+        """Transform the quote to piglatin variant."""
+        words = quote.split()
 
         for i, word in enumerate(words):
             match = re.match(r"[^aeiouAEIOU]+", word)
@@ -89,15 +90,14 @@ class Quote:
 
             words[i] = pig_word
 
-        # Sentence case
-        words[0] = words[0][0].upper() + words[0][1:].lower()
-        text = " ".join(words)
+        # Capitalize the first word
+        words[0] = words[0].capitalize()
+        quote = " ".join(words)
 
-        if len(text) > MAX_QUOTE_LENGTH:
-            msg = "Quote was not modified"
-            raise ValueError(msg)
+        if len(quote) > MAX_QUOTE_LENGTH:
+            raise ValueError(self.error_msgs[2])
 
-        return text
+        return quote
 
 
 def run_command(command: str) -> None:
